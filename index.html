@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="fr">
+	<head>
+	    <meta charset="utf-8">
+	    <title>Movie Explorer</title>
+		<link rel="stylesheet" href="style.css">
+		<script src="includes/js/three.min.js"></script>
+		<script src="includes/js/OrbitControls.js"></script>
+		<script src="includes/js/classes.js"></script>
+	</head>
+
+	<body>
+
+	<script>
+		var camera, scene, renderer, controls;
+		var geometry, material, mesh;
+        
+
+		init();
+		animate();
+
+		function init() {
+
+			camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.01, 10 );
+			camera.position.set( 0, 0, 1 );
+            
+            controls = new THREE.OrbitControls( camera );
+
+			scene = new THREE.Scene();
+            
+            for(var i=0; i<25; i++){
+                movie = new Movie();
+                geometry = new THREE.SphereGeometry( 0.01, 32, 32 );
+                material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+                // material = new THREE.MeshNormalMaterial();
+                
+                mesh = new THREE.Mesh( geometry, material );
+                mesh.position.set( movie.x, movie.y, movie.z );
+			    scene.add( mesh );
+            }
+
+			renderer = new THREE.WebGLRenderer( { antialias: true } );
+			renderer.setSize( window.innerWidth, window.innerHeight );
+			document.body.appendChild( renderer.domElement );
+
+            controls.update();
+		}
+
+		function animate() {
+
+			requestAnimationFrame( animate );
+
+			// mesh.rotation.x += 0.01;
+			// mesh.rotation.y += 0.02;
+            controls.update();
+            
+			renderer.render( scene, camera );
+
+		}
+	</script>
+
+</body>
+</html>
