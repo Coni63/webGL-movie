@@ -1,8 +1,9 @@
-function Movie(){
-    this.movieID = "000";
-    this.x = Math.random()-0.5;
-    this.y = Math.random()-0.5;
-    this.z = Math.random()-0.5;
+function Movie(title, x, y, z){
+    this.movieID = title;
+    this.title = title;
+    this.x = x;
+    this.y = y;
+    this.z = z;
     this.links = [];
 };
 
