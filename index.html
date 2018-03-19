@@ -21,111 +21,12 @@
     <script src="includes/js/OrbitControls.js"></script>
     <script src="includes/js/stats.min.js"></script>
     <script src="includes/js/Detector.js"></script>
-    <script src="includes/js/classes.js"></script>
+    <script src="includes/js/Octree.js"></script>
+    
     <script type="text/javascript" src="datas/prod_dataset.json"></script>
     
-	<script>
-        if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
-        
-		var camera, scene, renderer, controls, raycaster;
-		var geometry, material, mesh;
-        var instances = {};
-
-        var mydata = JSON.parse(data);
-
-        var raycaster = new THREE.Raycaster();
-        var mouse = new THREE.Vector2();
-        
-		init();
-		animate();
-
-		function init() {
-            
-            var container = document.getElementById("container");
-            
-			camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 100 );
-			camera.position.set( 0, 0, 40 );
-            camera.lookAt( 0, 0, -40 );
-            
-            scene = new THREE.Scene();
-            
-            controls = new THREE.OrbitControls( camera );
-            
-            raycaster = new THREE.Raycaster();
-            
-            geometry = new THREE.SphereBufferGeometry( 0.1, 32, 32 );
-            
-            for(var i=0; i<250; i++){
-                
-                var movie = new Movie( mydata.movie_title[i], mydata.X[i], mydata.Y[i], mydata.Z[i]);
-                var mesh = new THREE.Mesh( geometry, new THREE.MeshBasicMaterial( {color: 0xffffff} ) );
-                    mesh.position.set( movie.x, movie.y, movie.z );
-                
-                instances[ mesh.uuid ] = movie;
-			    scene.add( mesh );
-            }
-                
-            renderer = new THREE.WebGLRenderer();
-            renderer.setPixelRatio( window.devicePixelRatio );
-            renderer.setSize( window.innerWidth, window.innerHeight );
-            container.appendChild( renderer.domElement );
-
-            stats = new Stats();
-            container.appendChild( stats.dom );
-
-            window.addEventListener( 'resize', onWindowResize, false );
-            window.addEventListener( 'click', onClick, false );
-		}
-
-		function animate() {
-
-			requestAnimationFrame( animate );
-            controls.update();
-			render();
-            stats.update();
-
-		}
-        
-        function onClick( event ) {
-            
-            mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-            mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-            compute_intersect();
-        }
-        
-        function onWindowResize( event ) {
-
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-
-            renderer.setSize( window.innerWidth, window.innerHeight );
-
-        }
-
-        function compute_intersect(){
-            raycaster.setFromCamera( mouse, camera );
-            
-            let intersects = raycaster.intersectObjects( scene.children );
-            intersection = (intersects.length) > 0 ? intersects[0] : null;
-            
-            if (intersection !== null){
-                if ( intersection.object.material.color.equals( new THREE.Color( 0xffffff ) ) ){
-                    intersection.object.material.color.set( 0xff0000 );
-                    selected_movie = instances[ intersection.object.uuid ];
-                    $("#info").text(selected_movie.title);
-                } else {
-                    intersection.object.material.color.set( 0xffffff );
-                }
-            }
-        }
-        
-        function render(){
-                        
-            renderer.render( scene, camera );
-            
-        }
-        
-	</script>
+    <script src="includes/js/classes.js"></script>
+    <script src="includes/js/rendering.js"></script>
 
 </body>
 </html>
