@@ -8,12 +8,32 @@
 	</head>
 
 	<body>
-   
-    <div id="container">
-    </div>
+
+    <div id="container"></div>
        
     <div id="info">
-        Select a movie !
+        Select a movie ! 
+    </div>
+    
+<!--
+    <div id="info2">
+        <table>
+            <tr>
+                <td>mech 1</td>
+                <td>
+                   <select id="mech1_anime"> 
+                    <option value="stand">stand</option>
+                    <option value="wark">wark</option>
+                    <option value="attack">attack</option>
+                  </select>
+                </td>
+            </tr>
+        </table>
+    </div>
+-->
+    
+    <div id="footer">
+        <div class="text_info">Reset camera: <span class="key_info">R</span> - (Re)generate: <span class="key_info">G</span></div>
     </div>
     
     <script src="includes/js/jquery-3.3.1.min.js"></script>
@@ -22,11 +42,12 @@
     <script src="includes/js/stats.min.js"></script>
     <script src="includes/js/Detector.js"></script>
     <script src="includes/js/Octree.js"></script>
+    <script src="includes/js/dat.gui.min.js"></script>
     
     <script type="text/javascript" src="datas/prod_dataset.json"></script>
     
     <script src="includes/js/classes.js"></script>
-    <script src="includes/js/rendering.js"></script>
+    <script src="includes/js/rendering.js"></script>   
 
 </body>
 </html>

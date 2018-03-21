@@ -8,7 +8,7 @@ body {
     
     width: 100%;
     height: 100%;
-
+    
     background: #11e8bb; /* Old browsers */
     background: -moz-linear-gradient(top,  #11e8bb 0%, #8200c9 100%); /* FF3.6-15 */
     background: -webkit-linear-gradient(top,  #11e8bb 0%,#8200c9 100%); /* Chrome10-25,Safari5.1-6 */
@@ -18,11 +18,37 @@ body {
 
 #info {
     position: absolute;
-    top: 0px; width: 100%;
+    top: 0px;
+    width: 100%;
+    color: #ffffff;
     padding: 5px;
+    font-family:Monospace;
+    font-size:13px;
+    text-align:center;
 }
 
 a {
-
     color: #0080ff;
 }
+
+#info2 { 
+    color: #fff; 
+    background-color: #000; 
+    position: absolute; 
+    top: 50%; 
+    right : 0px; 
+    width: 20em; 
+    z-index: 20000; 
+    display: block;  
+}
+
+td { 
+    padding: 0.5em;
+}
+
+
+
+#footer { position: absolute; bottom: 10px; width: 100%; }
+
+.key_info { color: skyblue }
+.text_info { display: inline; margin-left: 1em }
