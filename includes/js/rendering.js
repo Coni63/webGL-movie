@@ -8,11 +8,13 @@ var octree;
 var mydata = JSON.parse(data);
 var ambientLight;
 var lights = [];
-var max_movie = 4918;
+var max_movie = 250;
 
 var raycaster;
 var mouse = new THREE.Vector2();
 var intersected;
+var frustum = new THREE.Frustum();
+var cameraViewProjectionMatrix = new THREE.Matrix4();
 
 var params = {
     color : '#ff0000',
@@ -24,8 +26,11 @@ var params = {
     spot3_color: '#8200C9',
     color_dropdown: '#00ff00',
     max_depth : 100,
-    display_fps : true
+    display_fps : true,
+    text_depth : 7
 };
+
+var textlabels = [];
 
 init();
 animate();
@@ -53,6 +58,12 @@ function init() {
             mesh.rotation.set(Math.random() * 2, Math.random() * 2, Math.random() * 2);
         instances[ mesh.uuid ] = movie;
         meshes.push(mesh);
+        
+        var text = new Textbox();
+            text.setHTML(movie.title);
+            text.setParent(mesh);
+            textlabels.push(text);
+        container.appendChild(text.element);
     }
     
     // lights
@@ -74,8 +85,8 @@ function init() {
     var gui = new dat.GUI();
     
     var color = gui.addFolder('Colors');
-    color.addColor( params, 'color' ) //.onChange( function( value ) {console.log(value);} );
-    color.addColor( params, 'color_dropdown' )
+    color.addColor( params, 'color' );
+    color.addColor( params, 'color_dropdown' );
     color.addColor( params, 'ambiente_color' ).onChange( function( value ) {
         ambientLight.color = new THREE.Color( value );
     });
@@ -111,6 +122,8 @@ function init() {
         camera.updateProjectionMatrix();
     } );
     
+    rendering.add( params, 'text_depth', 1, 100 ).step( 1 );
+    
     rendering.add( params, 'display_fps').onChange(function( value ){
         stats.dom.hidden = !value;
     });
@@ -138,7 +151,7 @@ function init() {
 
     // mouse control
     controls = new THREE.OrbitControls( camera, domElement = renderer.domElement, localElement=renderer.domElement );
-
+        
     // events
     window.addEventListener( 'resize', onWindowResize, false );
     window.addEventListener( 'click', onClick, false );
@@ -157,6 +170,23 @@ function animate() {
 }
 
 function render(){
+    
+    camera.updateMatrixWorld(); // make sure the camera matrix is updated
+    camera.matrixWorldInverse.getInverse( camera.matrixWorld );
+    cameraViewProjectionMatrix.multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse );
+    frustum.setFromMatrix( cameraViewProjectionMatrix );
+
+    for(var i=0; i<textlabels.length; i++) {
+        if ( frustum.intersectsObject( meshes[i] ) ){
+            if ( meshes[i].position.distanceTo( camera.position ) < params.text_depth ) {
+                textlabels[i].show();
+                textlabels[i].updatePosition(camera);
+                continue;
+            }
+        }
+        textlabels[i].hide();
+    }
+        
     renderer.render( scene, camera );
     octree.update();
 }
@@ -269,3 +299,4 @@ $( "#movie_list" ).change(function() {
     }
   });
 });
+

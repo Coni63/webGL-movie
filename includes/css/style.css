@@ -37,8 +37,8 @@ a {
     position: absolute; 
     top: 50%; 
     right : 0px; 
-    width: 20em; 
-    z-index: 20000; 
+    width: 22em; 
+    z-index: 10000; 
     display: block;  
 }
 
@@ -50,3 +50,10 @@ td {
 
 .key_info { color: skyblue }
 .text_info { display: inline; margin-left: 1em }
+
+.text-label {
+  color: #fff;
+  font-family: "Fira Mono", Monaco, "Andale Mono", "Lucida Console", "Bitstream Vera Sans Mono", "Courier New", Courier, monospace;
+  margin: -5px 0 0 15px;
+  pointer-events:none;
+}
