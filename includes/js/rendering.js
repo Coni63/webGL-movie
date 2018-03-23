@@ -4,11 +4,17 @@ var camera, scene, renderer, controls, raycaster, container;
 var geometry, material, mesh;
 var instances = {}; // store obj -> movie
 var meshes = [];
-var octree; 
+var octree = new THREE.Octree( {
+    undeferred: false,
+    depthMax: 5,
+    objectsThreshold: 8,
+    overlapPct: 0.15
+} );
 var mydata = JSON.parse(data);
 var ambientLight;
 var lights = [];
-var max_movie = 250;
+var max_movie = 4918;
+var base_radius = 0.05;
 
 var raycaster;
 var mouse = new THREE.Vector2();
@@ -19,7 +25,7 @@ var cameraViewProjectionMatrix = new THREE.Matrix4();
 var params = {
     color : '#ff0000',
     scale : 1,
-    max_points: 250,
+    max_points: 1000,
     ambiente_color : '#999999',
     spot1_color: '#ffffff',
     spot2_color: '#11E8BB',
@@ -31,6 +37,7 @@ var params = {
 };
 
 var textlabels = [];
+var text_container;
 
 init();
 animate();
@@ -38,7 +45,8 @@ animate();
 function init() {
 
     container = document.getElementById("container");
-
+    text_container = document.getElementById("textbox_container");
+    
     // camera
     camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, params.max_depth );
     camera.position.set( 0, 0, 40 );
@@ -50,20 +58,17 @@ function init() {
     raycaster = new THREE.Raycaster();
 
     // mesh
-    geometry = new THREE.IcosahedronBufferGeometry( 0.1*params.scale, 0 );
-    for(var i=0; i<max_movie ; i++){
+    geometry = new THREE.IcosahedronBufferGeometry( base_radius*params.scale, 0 );
+    for(var i=0; i < max_movie ; i++){
         var movie = new Movie( mydata.movie_title[i], mydata.X[i], mydata.Y[i], mydata.Z[i]);
         var mesh = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial({ color: 0xffffff, flatShading : true }) );
             mesh.position.set( movie.x, movie.y, movie.z );
             mesh.rotation.set(Math.random() * 2, Math.random() * 2, Math.random() * 2);
+            mesh.visible = false;
         instances[ mesh.uuid ] = movie;
+        octree.add(mesh, { useFaces: false } );
         meshes.push(mesh);
-        
-        var text = new Textbox();
-            text.setHTML(movie.title);
-            text.setParent(mesh);
-            textlabels.push(text);
-        container.appendChild(text.element);
+        scene.add(mesh);
     }
     
     // lights
@@ -170,23 +175,28 @@ function animate() {
 }
 
 function render(){
+    text_container.innerHTML = "";
     
     camera.updateMatrixWorld(); // make sure the camera matrix is updated
     camera.matrixWorldInverse.getInverse( camera.matrixWorld );
     cameraViewProjectionMatrix.multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse );
     frustum.setFromMatrix( cameraViewProjectionMatrix );
 
-    for(var i=0; i<textlabels.length; i++) {
+    for(var i=0; i<meshes.length; i++) {
+        if (!meshes[i].visible) continue;
+        
         if ( frustum.intersectsObject( meshes[i] ) ){
-            if ( meshes[i].position.distanceTo( camera.position ) < params.text_depth ) {
-                textlabels[i].show();
-                textlabels[i].updatePosition(camera);
+            if ( meshes[i].position.distanceTo( camera.position ) <= params.text_depth ) {
+                var text = new Textbox();
+                    text.setHTML(instances[meshes[i].uuid].title);
+                    text.setParent(meshes[i]);
+                    text.updatePosition(camera);
+                text_container.appendChild(text.element);
                 continue;
             }
         }
-        textlabels[i].hide();
     }
-        
+     
     renderer.render( scene, camera );
     octree.update();
 }
@@ -248,28 +258,17 @@ function onDocumentMouseMove( event ) {
 
 }
 
-function regenerate(){
-    for (var i = 0; i < scene.children.length; i++){
-        if (scene.children[i].type == "Mesh"){
-            scene.remove(scene.children[i]);
-        }
-    }
-    
+function regenerate(){    
     $("#movie_list").find('option').remove().end();
     
-    octree = new THREE.Octree( {
-        //scene: scene,
-        undeferred: false,
-        depthMax: 5,
-        objectsThreshold: 8,
-        overlapPct: 0.15
-    } );
+    for (var i=0; i< meshes.length ; i++){
+        meshes[i].visible = false;
+    }
     
     for (var i=0; i< params.max_points ; i++){
-        scene.add(meshes[i]);
-        octree.add(meshes[i], { useFaces: false } );
+        meshes[i].visible = true;
         $("#movie_list").append('<option value='+meshes[i].uuid+'>'+ instances[meshes[i].uuid].title + '</option>');
-    }
+    }    
 }
 
 function onKeyDown ( event ) {
@@ -299,4 +298,3 @@ $( "#movie_list" ).change(function() {
     }
   });
 });
-
