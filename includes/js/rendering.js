@@ -1,27 +1,26 @@
 if ( ! Detector.webgl ) Detector.addGetWebGLMessage();
 
 var camera, scene, renderer, controls, raycaster, container;
-var geometry, material, mesh;
-var instances = {}; // store obj -> movie
-var meshes = [];
+var geometry, material, mesh, ambientLight;
+var intersected;
 var octree = new THREE.Octree( {
     undeferred: false,
     depthMax: 5,
     objectsThreshold: 8,
     overlapPct: 0.15
 } );
-var mydata = JSON.parse(data);
-var ambientLight;
-var lights = [];
-var max_movie = 4918;
-var base_radius = 0.05;
-
-var raycaster;
 var mouse = new THREE.Vector2();
-var intersected;
 var frustum = new THREE.Frustum();
 var cameraViewProjectionMatrix = new THREE.Matrix4();
 
+var lights = [];
+var meshes = [];
+var text_container;
+
+var instances = {}; // store obj -> movie
+
+var max_movie = 4918;
+var base_radius = 0.05;
 var params = {
     color : '#ff0000',
     scale : 1,
@@ -36,14 +35,41 @@ var params = {
     text_depth : 7
 };
 
-var textlabels = [];
-var text_container;
+// instantiate a loader
+//var loader = new THREE.JSONLoader();
+//var loader = new THREE.ObjectLoader();
+//var loader = new THREE.FileLoader();
+//    loader.load(
+//        // resource URL
+//        'datas/prod_dataset2.json',
+//
+//        // onLoad callback
+//        function ( data ) {
+//            console.log( 'loaded' );
+//            mydata = JSON.parse(data);
+//            console.log(mydata);
+//        },
+//
+//        // onProgress callback
+//        function ( xhr ) {
+//            console.log( (xhr.loaded / xhr.total * 100) + '% loaded' );
+//        },
+//
+//        // onError callback
+//        function( err ) {
+//            console.log( 'An error happened' );
+//        }
+//    );
+//
+//var object = loader.parse( mydata );
+
+var mydata = JSON.parse(data);
 
 init();
 animate();
 
 function init() {
-
+    // get Elements
     container = document.getElementById("container");
     text_container = document.getElementById("textbox_container");
     
@@ -169,12 +195,14 @@ function animate() {
 
     requestAnimationFrame( animate );
     render();
-    controls.update();
-    stats.update();
+    controls.update();  // update mouse moves
+    stats.update();     // display stats
 
 }
 
 function render(){
+    
+    //Live generation of Textboxes
     text_container.innerHTML = "";
     
     camera.updateMatrixWorld(); // make sure the camera matrix is updated
@@ -182,23 +210,24 @@ function render(){
     cameraViewProjectionMatrix.multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse );
     frustum.setFromMatrix( cameraViewProjectionMatrix );
 
-    for(var i=0; i<meshes.length; i++) {
+    for (var i=0; i<meshes.length; i++) {
         if (!meshes[i].visible) continue;
         
-        if ( frustum.intersectsObject( meshes[i] ) ){
-            if ( meshes[i].position.distanceTo( camera.position ) <= params.text_depth ) {
-                var text = new Textbox();
-                    text.setHTML(instances[meshes[i].uuid].title);
-                    text.setParent(meshes[i]);
-                    text.updatePosition(camera);
-                text_container.appendChild(text.element);
-                continue;
-            }
+        if (!frustum.intersectsObject( meshes[i] )) continue;
+        
+        if ( meshes[i].position.distanceTo( camera.position ) <= params.text_depth ) {
+            var text = new Textbox();
+                text.setHTML(instances[meshes[i].uuid].title);
+                text.setParent(meshes[i]);
+                text.updatePosition(camera);
+            text_container.appendChild(text.element);
         }
     }
-     
+    
+    // rendering of the scene
     renderer.render( scene, camera );
     octree.update();
+    
 }
 
 function onClick( event ) {
@@ -219,7 +248,8 @@ function onWindowResize( event ) {
 }
 
 function onDocumentMouseMove( event ) {
-
+    // change color on the selected item with mouse. Use Raycaster and Octree structure for performances.
+    
     event.preventDefault();
 
     mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
@@ -258,7 +288,8 @@ function onDocumentMouseMove( event ) {
 
 }
 
-function regenerate(){    
+function regenerate(){
+    // regenerate dropdown list with only visible points
     $("#movie_list").find('option').remove().end();
     
     for (var i=0; i< meshes.length ; i++){
@@ -276,7 +307,7 @@ function onKeyDown ( event ) {
     switch( event.keyCode ) {
 
         case 82: /*R*/	camera.position.set( 0, 0, 40 ); break;
-        case 71: /*R*/	regenerate(); break;
+        case 71: /*G*/	regenerate(); break;
 
     }
 
