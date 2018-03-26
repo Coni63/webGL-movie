@@ -17,8 +17,6 @@ var lights = [];
 var meshes = [];
 var text_container;
 
-var instances = {}; // store obj -> movie
-
 var max_movie = 4918;
 var base_radius = 0.05;
 var params = {
@@ -32,7 +30,9 @@ var params = {
     color_dropdown: '#00ff00',
     max_depth : 100,
     display_fps : true,
-    text_depth : 7
+    text_depth : 7,
+    font_close : 15,
+    font_far : 6
 };
 
 // instantiate a loader
@@ -91,7 +91,7 @@ function init() {
             mesh.position.set( movie.x, movie.y, movie.z );
             mesh.rotation.set(Math.random() * 2, Math.random() * 2, Math.random() * 2);
             mesh.visible = false;
-        instances[ mesh.uuid ] = movie;
+        mesh.info = movie;
         octree.add(mesh, { useFaces: false } );
         meshes.push(mesh);
         scene.add(mesh);
@@ -131,6 +131,12 @@ function init() {
         lights[2].color = new THREE.Color( value );
     });
     color.close();
+    
+    var font_info = gui.addFolder('Text');
+    font_info.add( params, 'text_depth' , 1, 100).step( 1 );
+    font_info.add( params, 'font_close' , 5, 30).step( 1 );
+    font_info.add( params, 'font_far' , 1, 10).step( 1 );
+    font_info.close();
     
     var rendering = gui.addFolder('Rendering');
     rendering.add( params, 'scale', 0.1, 10 ).step( 0.005 ).onChange( function( value ) {
@@ -215,11 +221,12 @@ function render(){
         
         if (!frustum.intersectsObject( meshes[i] )) continue;
         
-        if ( meshes[i].position.distanceTo( camera.position ) <= params.text_depth ) {
+        let d = meshes[i].position.distanceTo( camera.position );
+        if ( d <= params.text_depth ) {
             var text = new Textbox();
-                text.setHTML(instances[meshes[i].uuid].title);
+                text.setHTML(meshes[i].info.title);
                 text.setParent(meshes[i]);
-                text.updatePosition(camera);
+                text.updatePosition(camera, d);
             text_container.appendChild(text.element);
         }
     }
@@ -268,8 +275,7 @@ function onDocumentMouseMove( event ) {
 
             intersected = intersections[ 0 ].object;
             intersected.material.color.set( params.color );
-            selected_movie = instances[ intersected.uuid ];
-            $("#info").text(selected_movie.title);
+            $("#info").text(intersected.info.title);
         }
 
         document.body.style.cursor = 'pointer';
@@ -298,7 +304,7 @@ function regenerate(){
     
     for (var i=0; i< params.max_points ; i++){
         meshes[i].visible = true;
-        $("#movie_list").append('<option value='+meshes[i].uuid+'>'+ instances[meshes[i].uuid].title + '</option>');
+        $("#movie_list").append('<option value='+meshes[i].uuid+'>'+ meshes[i].info.title + '</option>');
     }    
 }
 
@@ -308,6 +314,7 @@ function onKeyDown ( event ) {
 
         case 82: /*R*/	camera.position.set( 0, 0, 40 ); break;
         case 71: /*G*/	regenerate(); break;
+        case 72: /*H*/   window.open("help.html",'_blank');
 
     }
 
@@ -319,7 +326,6 @@ $( "#movie_list" ).change(function() {
       for (var i = 0; i < scene.children.length; i++){
         if (scene.children[i].uuid == uuid_selected){
             target_pos = scene.children[i].position;
-            console.log(target_pos);
             controls.target.set(target_pos.x, target_pos.y, target_pos.z);
             camera.position.set(target_pos.x+5, target_pos.y, target_pos.z);
             controls.update();
