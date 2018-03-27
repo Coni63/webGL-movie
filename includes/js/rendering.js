@@ -17,12 +17,12 @@ var lights = [];
 var meshes = [];
 var text_container;
 
-var max_movie = 4918;
+var max_movie = 9149;
 var base_radius = 0.05;
 var params = {
     color : '#ff0000',
-    scale : 1,
-    max_points: 1000,
+    scale : 1.5,
+    max_points: 2500,
     ambiente_color : '#999999',
     spot1_color: '#ffffff',
     spot2_color: '#11E8BB',
@@ -75,7 +75,7 @@ function init() {
     
     // camera
     camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, params.max_depth );
-    camera.position.set( 0, 0, 40 );
+    camera.position.set( 0, 40, 50 );
 
     // scene
     scene = new THREE.Scene();
@@ -86,7 +86,8 @@ function init() {
     // mesh
     geometry = new THREE.IcosahedronBufferGeometry( base_radius*params.scale, 0 );
     for(var i=0; i < max_movie ; i++){
-        var movie = new Movie( mydata.movie_title[i], mydata.X[i], mydata.Y[i], mydata.Z[i]);
+//        var movie = new Movie( mydata.movie_title[i], mydata.X[i], mydata.Y[i], mydata.Z[i]);
+        var movie = new Movie( mydata.primaryTitle[i], mydata.tconst[i], mydata.X[i], mydata.Y[i], mydata.Z[i]);
         var mesh = new THREE.Mesh( geometry, new THREE.MeshPhongMaterial({ color: 0xffffff, flatShading : true }) );
             mesh.position.set( movie.x, movie.y, movie.z );
             mesh.rotation.set(Math.random() * 2, Math.random() * 2, Math.random() * 2);
@@ -305,7 +306,16 @@ function regenerate(){
     for (var i=0; i< params.max_points ; i++){
         meshes[i].visible = true;
         $("#movie_list").append('<option value='+meshes[i].uuid+'>'+ meshes[i].info.title + '</option>');
-    }    
+    } 
+    
+    var sel = $('#movie_list');
+//    var selected = sel.val(); // cache selected value, before reordering
+    var opts_list = sel.find('option');
+        opts_list.sort(function(a, b) { return $(a).text() > $(b).text() ? 1 : -1; });
+    sel.html('').append(opts_list);
+//    sel.val(selected); // set cached selected value
+    $("#movie_list").val($("#movie_list option:first").val());
+
 }
 
 function onKeyDown ( event ) {

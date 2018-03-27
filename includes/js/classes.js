@@ -1,8 +1,8 @@
 /* Class Movie */
 
 var Movie = class {
-    constructor(title, x, y, z){
-        this.movieID = title;
+    constructor(title, id, x, y, z){
+        this.movieID = id;
         this.title = title;
         this.x = x;
         this.y = y;
