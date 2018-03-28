@@ -17,11 +17,11 @@ var lights = [];
 var meshes = [];
 var text_container;
 
-var max_movie = 9149;
+var max_movie = 9150;
 var base_radius = 0.05;
 var params = {
     color : '#ff0000',
-    scale : 1.5,
+    scale : 2.5,
     max_points: 2500,
     ambiente_color : '#999999',
     spot1_color: '#ffffff',
@@ -63,6 +63,11 @@ var params = {
 //
 //var object = loader.parse( mydata );
 
+//var mydata;
+//$.getJSON( "datas/new_model50.json" , function( result ){
+//    mydata = result;
+//});
+
 var mydata = JSON.parse(data);
 
 init();
@@ -75,7 +80,7 @@ function init() {
     
     // camera
     camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, params.max_depth );
-    camera.position.set( 0, 40, 50 );
+    camera.position.set( 0, 50, 40 );
 
     // scene
     scene = new THREE.Scene();
@@ -85,6 +90,7 @@ function init() {
 
     // mesh
     geometry = new THREE.IcosahedronBufferGeometry( base_radius*params.scale, 0 );
+//    geometry = new THREE.TetrahedronBufferGeometry( base_radius*params.scale );
     for(var i=0; i < max_movie ; i++){
 //        var movie = new Movie( mydata.movie_title[i], mydata.X[i], mydata.Y[i], mydata.Z[i]);
         var movie = new Movie( mydata.primaryTitle[i], mydata.tconst[i], mydata.X[i], mydata.Y[i], mydata.Z[i]);
@@ -212,7 +218,7 @@ function render(){
     //Live generation of Textboxes
     text_container.innerHTML = "";
     
-    camera.updateMatrixWorld(); // make sure the camera matrix is updated
+    camera.updateMatrixWorld(); // make sure the camera matrix is updatedr
     camera.matrixWorldInverse.getInverse( camera.matrixWorld );
     cameraViewProjectionMatrix.multiplyMatrices( camera.projectionMatrix, camera.matrixWorldInverse );
     frustum.setFromMatrix( cameraViewProjectionMatrix );
@@ -322,7 +328,7 @@ function onKeyDown ( event ) {
 
     switch( event.keyCode ) {
 
-        case 82: /*R*/	camera.position.set( 0, 0, 40 ); break;
+        case 82: /*R*/	camera.position.set( 0, 50, 40 ); break;
         case 71: /*G*/	regenerate(); break;
         case 72: /*H*/   window.open("help.html",'_blank');
 
