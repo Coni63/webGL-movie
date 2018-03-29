@@ -1,27 +1,8 @@
 # Movie Explorer
 
-This project use Machine Learning Algorithms to be represent, in a 3D space, movies based on similarities. From a Dataset provided by [IMDb](https://www.imdb.com/interfaces/), a subset of movie has been extracted. Datas have been completed/improved by using [OMDb API](http://www.omdbapi.com/). After a phase a cleanup/preparation, the tSNE model has been used to represent movies in a smaller dimension. The rendering has been done in JavaScript using WebGL with three.js.
+## What is this website
 
-Website is available at [https://coni63.github.io/](https://coni63.github.io/)
-
-![rendering](https://github.com/Coni63/coni63.github.io/blob/master/includes/img/render1.png)
-
-## Getting Started
-
-These instructions will get you a copy of the project up and running on your local machine for development and testing purposes. See deployment for notes on how to deploy the project on a live system.
-
-### Prerequisites
-
-No prerequisites are needed, you can download the repository or clone it.
-
-```
-git clone https://github.com/Coni63/coni63.github.io.git
-```
-
-### Installing
-
-No installation is required. All libraries are included in "/includes/" folder
-
+This project has for objective to embed movies based on similarities, in a 3D space. If you liked a movie and want to see similar movies, you can look which other movies are close to this one. Based on modelizations assumptions/restrictions, you may find different movies closer to a specific movie instead of the next episode. This is also kept on purpose as you often know that there is another episode.
 
 ## How to use
 
@@ -55,20 +36,6 @@ Several options are possibles in the control panel. You can change :
 * max_depth : Depth of the frustum
 * display_fps : hide/show the Stats Panel
 * regenerate : same as pressing "g"
-
-
-## Authors
-
-* **Nicolas MINE** - *Initial work* - [Coni63](https://github.com/Coni63)
-
-
-## Acknowledgments
-
-Some pieces of codes comes from som answers on StackOverflow forum. Most usefull ones will be displayed below :
-
-## To be done
-
-This project is still under constructions with a lot of features to include. Feel free to create a Pull request, let me know for improvements possible or issues. As mentionned above, a new dataset from IMDB will be used to create a more relevant clustering. 
 
 ## Possible issues
 

@@ -21,16 +21,16 @@ var max_movie = 9150;
 var base_radius = 0.05;
 var params = {
     color : '#ff0000',
-    scale : 2.5,
+    scale : 1,
     max_points: 2500,
     ambiente_color : '#999999',
     spot1_color: '#ffffff',
     spot2_color: '#11E8BB',
     spot3_color: '#8200C9',
     color_dropdown: '#00ff00',
-    max_depth : 100,
+    max_depth : 60,
     display_fps : true,
-    text_depth : 7,
+    text_depth : 4,
     font_close : 15,
     font_far : 6
 };
@@ -80,7 +80,7 @@ function init() {
     
     // camera
     camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 0.1, params.max_depth );
-    camera.position.set( 0, 50, 40 );
+    camera.position.set( 0, 0, 25 );
 
     // scene
     scene = new THREE.Scene();
@@ -99,6 +99,12 @@ function init() {
             mesh.rotation.set(Math.random() * 2, Math.random() * 2, Math.random() * 2);
             mesh.visible = false;
         mesh.info = movie;
+        
+        var text = new Textbox();
+            text.setHTML(movie.title);
+            text.setParent(mesh);
+        mesh.textbox = text;
+        
         octree.add(mesh, { useFaces: false } );
         meshes.push(mesh);
         scene.add(mesh);
@@ -140,7 +146,7 @@ function init() {
     color.close();
     
     var font_info = gui.addFolder('Text');
-    font_info.add( params, 'text_depth' , 1, 100).step( 1 );
+    font_info.add( params, 'text_depth' , 1, params.max_depth).step( 1 );
     font_info.add( params, 'font_close' , 5, 30).step( 1 );
     font_info.add( params, 'font_far' , 1, 10).step( 1 );
     font_info.close();
@@ -166,7 +172,7 @@ function init() {
         camera.updateProjectionMatrix();
     } );
     
-    rendering.add( params, 'text_depth', 1, 100 ).step( 1 );
+//    rendering.add( params, 'text_depth', 1, 100 ).step( 1 );
     
     rendering.add( params, 'display_fps').onChange(function( value ){
         stats.dom.hidden = !value;
@@ -230,11 +236,8 @@ function render(){
         
         let d = meshes[i].position.distanceTo( camera.position );
         if ( d <= params.text_depth ) {
-            var text = new Textbox();
-                text.setHTML(meshes[i].info.title);
-                text.setParent(meshes[i]);
-                text.updatePosition(camera, d);
-            text_container.appendChild(text.element);
+            meshes[i].textbox.updatePosition(camera, d);
+            text_container.appendChild(meshes[i].textbox.element);
         }
     }
     
@@ -250,6 +253,8 @@ function onClick( event ) {
     mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 
     if (intersected) controls.target.set(intersected.position.x, intersected.position.y, intersected.position.z);
+    
+    updateLink(intersected.info);
 
 }
 
@@ -328,12 +333,20 @@ function onKeyDown ( event ) {
 
     switch( event.keyCode ) {
 
-        case 82: /*R*/	camera.position.set( 0, 50, 40 ); break;
+        case 82: /*R*/	camera.position.set( 0, 0, 25 ); controls.target.set( 0, 0, 0 ); break;
         case 71: /*G*/	regenerate(); break;
-        case 72: /*H*/   window.open("help.html",'_blank');
-
+        case 72: /*H*/   window.open("https://github.com/Coni63/coni63.github.io/blob/master/README.md",'_blank');
+        case 112: /*F1*/ window.open("https://github.com/Coni63/coni63.github.io",'_blank');
     }
 
+}
+
+function updateLink(movie) {
+    
+    let url = "http://www.imdb.com/title/"+movie.movieID+"/";
+    $( "#movie_info" ).text(movie.title);
+    $( "#movie_info" ).attr("href", url);
+    
 }
 
 $( "#movie_list" ).change(function() {
@@ -347,6 +360,7 @@ $( "#movie_list" ).change(function() {
             controls.update();
             scene.children[i].material.color.set( params.color_dropdown );
             $("#info").text($(this).text());
+            updateLink(scene.children[i].info);
         }
     }
   });
