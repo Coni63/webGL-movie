@@ -5,8 +5,8 @@ var geometry, material, mesh, ambientLight;
 var intersected;
 var octree = new THREE.Octree( {
     undeferred: false,
-    depthMax: 5,
-    objectsThreshold: 8,
+    depthMax: Infinity,
+    objectsThreshold: 10,
     overlapPct: 0.15
 } );
 var mouse = new THREE.Vector2();
@@ -84,7 +84,8 @@ function init() {
 
     // scene
     scene = new THREE.Scene();
-
+    scene.fog = new THREE.Fog(0x000000, 0.015, 50);
+    
     // octree for raycasting
     raycaster = new THREE.Raycaster();
 

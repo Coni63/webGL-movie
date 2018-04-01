@@ -10,6 +10,20 @@ var Movie = class {
     }
 };
 
+var MovieV2 = class {
+    constructor(rank, score, color, title, id, x, y, z){
+        this.rank = rank;
+        this.score = score;
+        this.movieID = id;
+        this.title = title;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.color = new THREE.Color( color );
+        this.vec = new THREE.Vector3(x, y, z);
+    }
+};
+
 
 /* Text above points */ 
 
