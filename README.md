@@ -3,6 +3,7 @@
 This project use Machine Learning Algorithms to be represent, in a 3D space, movies based on similarities. From a Dataset provided by [IMDb](https://www.imdb.com/interfaces/), a subset of movie has been extracted. Datas have been completed/improved by using [OMDb API](http://www.omdbapi.com/). After a phase a cleanup/preparation, the tSNE model has been used to represent movies in a smaller dimension. The rendering has been done in JavaScript using WebGL with three.js.
 
 Website is available at [https://coni63.github.io/](https://coni63.github.io/)
+Information about the Modelization is available in the [MODEL.md](https://github.com/Coni63/coni63.github.io/blob/master/MODEL.md)
 
 ![rendering](https://github.com/Coni63/coni63.github.io/blob/master/includes/img/render1.png)
 
