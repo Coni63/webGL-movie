@@ -36,8 +36,7 @@ function init() {
 
     scene = new THREE.Scene();
 
-    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 3 );
-    camera.position.z = 1.8;        
+    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 3 );    
     
     clock = new THREE.Clock();
     clock.start()
@@ -107,7 +106,7 @@ function init() {
     
     geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
     geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
-//    geometry.computeBoundingSphere();
+
         
     points = new THREE.Points( geometry, pMaterial );
     scene.add( points );
@@ -147,7 +146,7 @@ function init() {
 
     renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true, preserveDrawingBuffer: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
-    renderer.setClearColor( 0xC2DFFF, 1);
+//    renderer.setClearColor( 0xC2DFFF, 1);
 
     container = document.getElementById( 'container' );
     container.appendChild( renderer.domElement );
@@ -161,15 +160,15 @@ function init() {
     // mouse control
     controls = new THREE.OrbitControls( camera, domElement = renderer.domElement, localElement=renderer.domElement );
     controls.minDistance = 1.05
-    camera.position.set( 0, 0, 1.8 );
+    camera.position.set( 0, 0, -1.8 );
     controls.noPan = true;
     
     // octree for raycasting
     raycaster = new THREE.Raycaster();
-//    raycaster.params.Points.threshold = 0.1;
     raycaster.far = 1
     
     window.addEventListener( 'mousemove', onDocumentMouseMove, false );
+    document.addEventListener( 'keydown', onKeyDown, false );
 }
 
 function onWindowResize() {
@@ -237,6 +236,16 @@ $( "#movie_list" ).change(function() {
         updateLink(mvi);
     });
 });
+
+function onKeyDown ( event ) {
+
+    switch( event.keyCode ) {
+
+        case 82: /*R*/	camera.position.set( 0, 0, -1.8 );break;
+        case 112: /*F1*/ window.open("https://github.com/Coni63/coni63.github.io",'_blank');break;
+    }
+
+}
 
 
 init();

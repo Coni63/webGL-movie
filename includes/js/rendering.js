@@ -336,8 +336,8 @@ function onKeyDown ( event ) {
 
         case 82: /*R*/	camera.position.set( 0, 0, 25 ); controls.target.set( 0, 0, 0 ); break;
         case 71: /*G*/	regenerate(); break;
-        case 72: /*H*/   window.open("https://github.com/Coni63/coni63.github.io/blob/master/README.md",'_blank');
-        case 112: /*F1*/ window.open("https://github.com/Coni63/coni63.github.io",'_blank');
+        case 72: /*H*/   window.open("https://github.com/Coni63/coni63.github.io/blob/master/README.md",'_blank'); break;
+        case 112: /*F1*/ window.open("https://github.com/Coni63/coni63.github.io",'_blank'); break;
     }
 
 }
