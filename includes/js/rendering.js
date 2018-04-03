@@ -253,7 +253,12 @@ function onClick( event ) {
     mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
     mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 
-    if (intersected) controls.target.set(intersected.position.x, intersected.position.y, intersected.position.z);
+    if (intersected){ 
+        controls.target.set(intersected.position.x, intersected.position.y, intersected.position.z);
+        camera.position.set(intersected.position.x+3, intersected.position.y, intersected.position.z);
+        controls.update();
+        intersected.material.color.set( params.color_dropdown );
+    }
     
     updateLink(intersected.info);
 
