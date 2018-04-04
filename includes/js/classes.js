@@ -21,6 +21,7 @@ var MovieV2 = class {
         this.z = z;
         this.color = new THREE.Color( color );
         this.vec = new THREE.Vector3(x, y, z);
+//        this.textbox = new TextboxV2(this.title);
     }
 };
 
@@ -75,6 +76,31 @@ var Textbox = class {
     
     show(){
         this.element.style.display = "block";
+    };
+    
+};
+
+var TextboxV2 = class {
+    constructor(text) {
+        this.element = document.createElement('div');
+        this.element.className = 'text-label';
+        this.element.style.position = 'absolute';
+        this.element.style.width = 100;
+        this.element.style.height = 100;
+        this.element.innerHTML = text;
+        this.element.style.top = -1000;
+        this.element.style.left = -1000;
+        this.element.style.fontSize = "10px";
+    };
+    
+    updatePosition(cam, point) {     
+        var vector = point.clone();
+            vector.project(camera);
+
+        vector.x = (+vector.x + 1)/2 * window.innerWidth;
+        vector.y = (-vector.y + 1)/2 * window.innerHeight;
+        this.element.style.left = vector.x + 'px';
+        this.element.style.top = vector.y + 'px';
     };
     
 };

@@ -31,14 +31,18 @@ var params = {
 }
 var scope;
 var pressed = false;
+var camera_pos = new THREE.Vector3( 0, 0, 0.01 );
+var text_container;
 
 function init() {
     
     var mydata = JSON.parse(data);
+    
+    text_container = document.getElementById("textbox_container");
 
     scene = new THREE.Scene();
 
-    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 1 );    
+    camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 1.5 );    
     
     clock = new THREE.Clock();
     clock.start()
@@ -63,7 +67,7 @@ function init() {
         
         $("#movie_list").append('<option value='+i+'>'+ movie.title + '</option>');
     } 
-    
+        
     var sel = $('#movie_list');
     var opts_list = sel.find('option');
         opts_list.sort(function(a, b) { return $(a).text() > $(b).text() ? 1 : -1; });
@@ -78,10 +82,10 @@ function init() {
     
     geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
     geometry.addAttribute( 'color', new THREE.BufferAttribute( colors, 3 ) );
-
         
     points = new THREE.Points( geometry, pMaterial );
     scene.add( points );
+    
     
     renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true, preserveDrawingBuffer: true } );
     renderer.setSize( window.innerWidth, window.innerHeight );
@@ -97,13 +101,11 @@ function init() {
     container.appendChild( stats.dom );
     
     // mouse control
-//    controls = new THREE.OrbitControlsSphere( camera, domElement = renderer.domElement, localElement=renderer.domElement );
-//    controls.minDistance = 0.001
-//    controls.maxDistance = 0.999
-    scope = renderer.domElement;
-    camera.position.set( 0, 0, 0 );
+    controls = new THREE.OrbitControls( camera, domElement = renderer.domElement, localElement=renderer.domElement );
+    camera.position.copy( camera_pos );
     camera.lookAt(0, 0, 1);
-//    controls.noPan = true;
+    controls.noPan = true;
+    controls.noZoom =true;
     
     // octree for raycasting
     raycaster = new THREE.Raycaster();
@@ -111,12 +113,11 @@ function init() {
     
     window.addEventListener( 'mousemove', onDocumentMouseMove, false );
     document.addEventListener( 'keydown', onKeyDown, false );
-    document.addEventListener( 'mousedown', onDocumentMouseDown, false );
+    // IE9, Chrome, Safari, Opera
     document.addEventListener( 'mousewheel', onDocumentMouseWheel, false );
-    document.addEventListener( 'mouseup', onDocumentMouseUp, false );
-    document.addEventListener( 'mouseout', onDocumentMouseOut, false );  
-//    window.addEventListener( 'keydown', onKeyDown, false);
-//    window.addEventListener( 'resize', onWindowResize, false );  
+    // Firefox
+	document.addEventListener("DOMMouseScroll", onDocumentMouseWheel, false);
+    window.addEventListener( 'resize', onWindowResize, false );  
 }
 
 function onWindowResize() {
@@ -129,74 +130,48 @@ function onWindowResize() {
 function onDocumentMouseMove( event ) {
     
     event.preventDefault();
-
-    if ( pressed == true ){
-        mouse.x = -event.clientX - windowHalfX;
-        mouse.y = event.clientY - windowHalfY;
-
-        deltaRotationQuaternion = new THREE.Quaternion()
-        deltaRotationQuaternion.setFromEuler(new THREE.Euler(
-                    (mouse.y - mouseYOnMouseDown) * Math.PI / 1000,
-                    (mouse.x - mouseXOnMouseDown) * Math.PI / 1000,                
-                    0, 'XYZ'));
         
-        mouseXOnMouseDown = mouse.x;    
-        mouseYOnMouseDown = mouse.y; 
-
-        points.quaternion.multiplyQuaternions( deltaRotationQuaternion, points.quaternion );
-    //    labels.quaternion.multiplyQuaternions( deltaRotationQuaternion, labels.quaternion );
-    } else {
+    mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+    mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
         
-//        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-//        mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-        
-        mouse.x = -event.clientX - windowHalfX;
-        mouse.y = event.clientY - windowHalfY;
-        
-        toggle += clock.getDelta();
+    toggle += clock.getDelta();
 
-        if (toggle < 0.1){
-            return;
-        }
-
-        raycaster.setFromCamera( mouse, camera );
-
-        var intersections = raycaster.intersectObject( sphere );
-
-        if ( intersections.length > 0 ) {
-            for (i=0; i<instances.length; i++){
-                let d = instances[i].vec.distanceToSquared( intersections[ 0 ].point );
-                if (d < 9e-6){
-                    $("#info").text(instances[i].title);
-                    toggle = 0;
-                    updateLink(instances[i]);
-                }
-            }
-        }
-        
+    if (camera.zoom < 20) {
+        text_container.innerHTML = "";
+        return;
     }
-}
+    if (toggle < 0.1) return;
 
-function onDocumentMouseDown( event ) {
-    event.preventDefault();
-    pressed = true;
+    
+    text_container.innerHTML = "";
+    
+    raycaster.setFromCamera( mouse, camera );
 
-    mouseXOnMouseDown = event.clientX - windowHalfX;    
-    mouseYOnMouseDown = event.clientY - windowHalfY;    
-}
+    intersection = raycaster.ray.direction
 
-function onDocumentMouseUp( event ) {
-    pressed = false;
-}
-
-function onDocumentMouseOut( event ) {
-    pressed = false;
+    for (i=0; i<instances.length; i++){
+        let d = instances[i].vec.distanceToSquared( intersection );
+        
+        if (d < 1e-7){
+            toggle = 0;
+            updateLink(instances[i]);
+        }
+        if (d < 1e-3){
+            var textbox = new TextboxV2(instances[i].title);
+                textbox.updatePosition(camera, instances[i].vec);
+            text_container.appendChild(textbox.element);
+        }
+    }
+        
 }
 
 function onDocumentMouseWheel( event ) {      
     var d = ((typeof event.wheelDelta != "undefined") ? (-event.wheelDelta) : event.detail);
-    camera.position.z -= 0.1/120*d;       
-    camera.position.z = Math.max( Math.min(camera.position.z, 0.95) , 0.001);
+    let factor_zoom_speed = (1.9*camera.zoom+3)/49;      // factor 0.1 @ min zoom (1), factor 2 @ max_zoom (50)
+    camera.zoom -= factor_zoom_speed*Math.sign(d);
+    camera.zoom = Math.min(camera.zoom, 50);  // max zoom
+    camera.zoom = Math.max(camera.zoom, 1);   // min zoom
+    update_rendering();
 }
 
 function animate() {
@@ -207,22 +182,35 @@ function animate() {
 
     stats.update();
     
-//    controls.update();
+    controls.update();
 }
 
 function updateLink(movie) {
-    
     let url = "http://www.imdb.com/title/"+movie.movieID+"/";
-    $( "#movie_info" ).text(movie.title);
-    $( "#movie_info" ).attr("href", url);
+    $( "#info" ).html('<a href="' +url+ '" target="_blank">'+movie.title+'<a>');
+    $( "#info" ).attr("href", url);
     
+}
+
+function update_rendering(){
+    controls.rotateSpeed = 1/camera.zoom;
+    let factor_particle_size = (0.007*camera.zoom+0.14)/49;
+    points.material.size = factor_particle_size;
+    camera.updateProjectionMatrix();
+    controls.update();
 }
 
 $( "#movie_list" ).change(function() {
     $( "select option:selected" ).each(function() {
         let idx =  $(this).attr("value");
         let mvi = instances[idx];
-        camera.position.set(mvi.x, mvi.y, mvi.z);
+        let _target =  mvi.vec.clone();
+        let _pos = mvi.vec.clone().multiplyScalar(-0.01);
+        camera.position.copy(_pos);
+        controls.target.copy( _target );
+        controls.target.set( 0, 0, 0 );
+        camera.zoom = 40;
+        update_rendering();
         updateLink(mvi);
     });
 });
@@ -231,7 +219,7 @@ function onKeyDown ( event ) {
 
     switch( event.keyCode ) {
 
-        case 82: /*R*/	camera.position.set( 0, 0, 0 );break;
+        case 82: /*R*/	camera.position.copy( camera_pos );break;
         case 112: /*F1*/ window.open("https://github.com/Coni63/coni63.github.io",'_blank');break;
     }
 
