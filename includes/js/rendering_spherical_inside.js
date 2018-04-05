@@ -133,7 +133,11 @@ function onDocumentMouseMove( event ) {
         
     mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
     mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-        
+    
+    display_label();
+}
+
+function display_label(){ 
     toggle += clock.getDelta();
 
     if (camera.zoom < 20) {
@@ -159,10 +163,10 @@ function onDocumentMouseMove( event ) {
         if (d < 1e-3){
             var textbox = new TextboxV2(instances[i].title);
                 textbox.updatePosition(camera, instances[i].vec);
+//            instances[i].textbox.updatePosition(camera, instances[i].vec);
             text_container.appendChild(textbox.element);
         }
     }
-        
 }
 
 function onDocumentMouseWheel( event ) {      
@@ -172,6 +176,7 @@ function onDocumentMouseWheel( event ) {
     camera.zoom = Math.min(camera.zoom, 50);  // max zoom
     camera.zoom = Math.max(camera.zoom, 1);   // min zoom
     update_rendering();
+    display_label();
 }
 
 function animate() {
