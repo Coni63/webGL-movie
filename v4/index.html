@@ -52,34 +52,10 @@
     <script src="../includes/js/dat.gui.min.js"></script>
     <script src="../includes/js/OrbitControls_inside.js"></script>
     
-    <script type="text/javascript" src="../datas/simulation/mdl_v4_2.json"></script>
-       
-<!--    <script src="../includes/js/classes.js"></script>-->
-    <script async>
-        var supportsES6 = function() {
-            try {
-                new Function("(a = 0) => a");
-                return true;
-            }
-            catch (err) {
-                return false;
-            }}();
-
-        var js = document.createElement("script");
-            js.type = "text/javascript";
-
-        if (supportsES6 == true){
-            console.log(supportsES6);
-            js.src = "../includes/js/classes.js";
-        } else {
-            console.log(supportsES6);
-            js.src = "../includes/js/classes_es5.js";
-        }
-
-        document.body.appendChild(js);
-    </script>
-   
-    <script async src="../includes/js/rendering_spherical_inside.js"></script>   
+    <script type="text/javascript" src="../datas/simulation/mdl_v4_3.json"></script>
+    <script type="text/javascript" src="../datas/simulation/centroides_2.json"></script>
+    
+    <script src="../includes/js/rendering_spherical_inside.js"></script>   
 
 </body>
 </html>
