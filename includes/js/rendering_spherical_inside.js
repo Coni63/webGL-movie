@@ -16,6 +16,7 @@ var text_container;
 var centroides;
 var mydata;
 var labels;
+var poster_placeholder;
 
 function init() {
         
@@ -23,7 +24,7 @@ function init() {
     centroides = JSON.parse(cluster);
     
     text_container = document.getElementById("textbox_container");
-
+    
     scene = new THREE.Scene();
 
     camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 3 );    
@@ -76,7 +77,7 @@ function init() {
     // Centroides
     labels = new THREE.Object3D();
     for (var i = 0; i < nb_labels; i++) {
-        var label = makeTextSprite( centroides["Style"][i], 5, { r:255, g:0, b:0, a:1.0 } );        
+        var label = makeTextSprite( centroides["Style"][i], 5, { r:244, g:241, b:66, a:1.0 } );        
             label.position.set( centroides["X"][i], centroides["Y"][i], centroides["Z"][i] );
         labels.add(label)        
     }
@@ -156,7 +157,7 @@ function display_label(){
             updateLink(instances[i]);
         }
         if (d < 1e-3){
-            var textbox = new TextboxV2(instances[i].title);
+            var textbox = new TextboxV2(instances[i].title, instances[i].color);
                 textbox.updatePosition(camera, instances[i].vec);
             text_container.appendChild(textbox.element);
         }
@@ -174,7 +175,6 @@ function onDocumentMouseWheel( event ) {
 }
 
 function animate() {
-    console.log(camera.zoom);
     if (camera.zoom > 10){
         labels.visible = false;
     } else {
@@ -192,8 +192,10 @@ function animate() {
 
 function updateLink(movie) {
     let url = "http://www.imdb.com/title/"+movie.movieID+"/";
-    $( "#info" ).html('<a href="' +url+ '" target="_blank">'+movie.title+'<a>');
-    $( "#info" ).attr("href", url);
+//    $( "#info" ).html('<a href="' +url+ '" target="_blank">'+movie.title+'<a>');
+    
+    let src = "../posters/"+movie.movieID+".jpg";
+    $( "#poster_placeholder" ).html('<a href="' +url+ '" target="_blank"><img src="' +src+ '" alt="'+movie.title+'"/><a>');
     
 }
 
@@ -290,7 +292,7 @@ if (supportsES6 == true){
     };
 
     var TextboxV2 = class {
-        constructor(text) {
+        constructor(text, color) {
             this.element = document.createElement('div');
             this.element.className = 'text-label';
             this.element.style.position = 'absolute';
@@ -300,6 +302,7 @@ if (supportsES6 == true){
             this.element.style.top = -1000;
             this.element.style.left = -1000;
             this.element.style.fontSize = "10px";
+            this.element.style.color = "#"+color.getHexString();
         };
 
         updatePosition(cam, point) {     
@@ -328,7 +331,7 @@ if (supportsES6 == true){
         this.vec = new THREE.Vector3(x, y, z);
     }
 
-    function TextboxV2(text) {
+    function TextboxV2(text, color) {
         this.element = document.createElement('div');
         this.element.className = 'text-label';
         this.element.style.position = 'absolute';
@@ -338,6 +341,7 @@ if (supportsES6 == true){
         this.element.style.top = -1000;
         this.element.style.left = -1000;
         this.element.style.fontSize = "10px";
+        this.element.style.color = "#"+color.getHexString();
     }
 
     TextboxV2.prototype.updatePosition = function(cam, point) {     

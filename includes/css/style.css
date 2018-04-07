@@ -111,7 +111,14 @@ td {
     text-align: left;
 }
 
-
+#poster_placeholder { 
+    position: absolute; 
+    top: 0px; 
+    right: 0px; 
+    width: 300px; 
+    z-index: 999; 
+    display: block; 
+}
 
 #footer { position: absolute; bottom: 10px; width: 100%; }
 

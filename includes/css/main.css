@@ -1,0 +1,20 @@
+H1, H3 {
+    font-family:Monospace;
+    text-align:center;
+}
+
+
+H4 {
+    text-align:left;
+}
+
+#summary {
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+}
+
+.summary {
+    font-family:Monospace;
+    text-align:left;
+}
