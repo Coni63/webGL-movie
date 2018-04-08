@@ -113,9 +113,24 @@ The result of the DOSNES is not as good as expected. It properly split good/bad 
 * Perplexity : 100
 * Learning-Rate : 500 
 
+### Model 4
+
+The model 4 also uses the DOSNES to embed datas on a Sphere but compare to model 2 & 3, the rendering is done from the inside like if you are looking at the stars. The distance matrix is also different. In order to have clear "galaxies" per type of movies, the factor used with the pairwise distance matrix is clearly above the other with a factor of 10. As a result, there is distinction possible per types. In addition a clustering has been done on this result with a analysis of genres for every galaxies to add a Sprite on centroides with Genres.
+
+### Model 5
+
+The last model is exactly the same as the Model 1 but the matrix used is also the one with a bigger factor with Genres. As the result, it creates also kind of galaxies. Nonetheless, I didn't spent time adding Genres on every centroides yet. For the TSNE, parameter used are :
+
+* Perplexity : 100
+* Learning-Rate : 500 
+
+to have the smallest KL-Divergence.
+
 ### Colors :
 
-For all model, a scoring has been applied on movies. The formula used is:
+For Model 2 and 3, a scoring has been applied on movies. The formula used is:
 > Score = Rating * log(Number of Votes)
 
-This ranking has been used in model 1 when we reduce the number of movie rendered. For model 2  and 3, this ranking has been converted to a color using the colormap from Matplotlib. As a result, best movies are shown in red, and worst ones in violet.
+For the model 1 and 5, the is no colors yet.
+
+For the model 4, to be more realistic and look like the sky another colormap has been used and the color is based on the Average Note.

@@ -31,7 +31,9 @@ You can explore the World of Movie manually or you can select a movie in the dro
 
 On mouse over a particle, the title with be displayed on top of the screen. In addition, all movies at a distance given to the camera will have the name close to it. The depth of rendering can be adjusted.
 
-### Movements
+### For Model 1 & 5 :
+
+#### Movements
 
 You can move the camera with :
 
@@ -42,7 +44,7 @@ You can move the camera with :
 * g : re-generate the rendering (only in case of bug)
 * h : open the Help ( this page, so you probably already know :) )
 
-### Options
+#### Options
 
 Several options are possibles in the control panel. You can change :
 
@@ -57,6 +59,25 @@ Several options are possibles in the control panel. You can change :
 * max_depth : Depth of the frustum
 * display_fps : hide/show the Stats Panel
 * regenerate : same as pressing "g"
+
+### For Model 2, 3 & 4 :
+
+#### Movements
+
+You can move the camera with :
+
+* left-click : rotation of the camera around a point ( initial position is (0, 0, 0) )
+* mouse-wheel : zoom
+
+#### Options
+
+For model 2 and 3, you can 
+
+* play with colors (sphere, and light)
+* Hide/Show the Sphere
+* Hide/Show the FPS
+
+On model 4, there is no option as there is no light/sphere. Instead, Posters will be displayed on this area on Mouve Over a Movie.
 
 
 ## Authors
@@ -76,7 +97,7 @@ This project is still under constructions with a lot of features to include. Fee
 
 ##### Important lags
 
-You may experience lags for multiple reasons :
+You may experience lags (mainly on models 1 and 5 with 3D objects) for multiple reasons :
 
 1. The number of points displayed is quite important for your computer (WebGL performances are lower than a game). Try to reduce the option "max_points".
 
