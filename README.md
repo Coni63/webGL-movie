@@ -101,7 +101,7 @@ You may experience lags (mainly on models 1 and 5 with 3D objects) for multiple 
 
 1. The number of points displayed is quite important for your computer (WebGL performances are lower than a game). Try to reduce the option "max_points".
 
-2. The depth of Text is too big. Every label are generaed using a floating <div>. At every frame, all position are recomputed and this is intensive if you display title of a lot of movies.
+2. The depth of label rendering is too big. Every label is generated using a floating \<div\>. At every frame, all position are calculated and this is intensive if you display title of a lot of movies.
 
 3. You don't have the "Hardware Activation"'s option activated. If you have a GPU and you see in the task manager that the use is 0% for your browser, that means this option is disabled. To activate it follow the steps based on your Browser on [this link](https://wevideo.zendesk.com/hc/en-us/articles/225259448-How-to-enable-WebGL)
 
